@@ -1,0 +1,69 @@
+#imports modules and the csv file; both the .py and csv are in the same directory
+
+import csv
+import os
+pybank_csv = os.path.join("PyBank.csv")
+
+#defines the function monthly_financials
+def monthly_financials(financials):
+    
+    #calculates the difference between the current month and previous month
+    monthly_change=int(financials[2])-int(financials[3])
+    
+    #calculates average monthly change
+    average_change=sum(monthly_change) / month_count
+    return average_change
+    
+#opens the csv, reads the first row as the header
+with open(pybank_csv, newline="") as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=",")
+    header=next(csvreader)
+    
+    #sums the total volume in column 2    
+    total_volume=sum(float(r[1]) for r in csvreader)
+    
+    #resets row position in csv  
+    csvfile.seek(0,0)
+    #counts the number of rows in the csv without the header 
+    month_count=sum(1 for line in csvreader)-1
+
+    #resets row position in csv
+    csvfile.seek(0,0)
+    
+    #sets up new lists for monthly financials calculations in the function
+    current_list=(r[1] for r in csvreader)
+    
+    #adds a new item to the current list to offset months for function
+    current_list[0]=""
+    
+    #resets position of rows in csv
+    csvfile.seek(0,0)
+    
+    #creates list of months for function calculation
+    new_list=(r[1] for r in csvreader)
+    
+    #creates empty list to store change in volume
+    monthly_change=[]
+
+    #resets row position in csv
+    csvfile.seek(0,0)
+    
+    #calls the function to run on the csv
+    for rownumber in csvfile:
+        monthly_financials(rownumber)
+
+
+#prints final financial analysis    
+print("")
+print("Financial Analysis")
+print("---------------------------------")
+print("Total Months: " + str(month_count))
+print("Total: $" + float(total_volume))
+print("Average Change $" + float(average_change))
+for row in csvreader:
+    if row==max(4): 
+        (print("Greatest Increase in Profits:" + row[1]+ ", " + row[4]))
+csvfile.seek(0,0)    
+for row in csvreader:
+    if row==min(4): 
+        (print("Greatest Decrease in Profits:" + row[1]+ ", " + row[4]))
